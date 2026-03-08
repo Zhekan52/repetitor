@@ -1,35 +1,44 @@
-// Типы данных для платформы мониторинга успеваемости
+// Типы данных для платформы мониторинга успеваемости ОГЭ
+
+export const SUBJECTS = ['Русский', 'Математика', 'География', 'Обществознание'] as const
+export type Subject = typeof SUBJECTS[number]
 
 export interface Student {
   id: string;
   name: string; // Псевдоним или краткое имя
-  level: string;
-  learningGoal: string;
-  skills: Skill[];
+  grade: string; // Класс (9 класс)
+  target: string; // Цель (ОГЭ, ЕГЭ и т.д.)
+  subjects: SubjectScore[];
   lessons: Lesson[];
   homework: Homework[];
   payments: Payment[];
-  notes: string; // Заметки репетитора
+  notes: string;
+  createdAt: string;
 }
 
-export interface Skill {
-  name: string;
-  score: number; // 1-10
+export interface SubjectScore {
+  subject: Subject;
+  score: number; // Оценка 2-5
+  lastTest: string | null; // Дата последнего теста
   lastUpdated: string;
 }
 
 export interface Lesson {
   id: string;
   date: string;
+  subject: Subject;
   topic: string;
-  status: 'Понял на 100%' | 'Нужно повторить' | 'Сложная тема';
+  status: 'Понял' | 'Нужно повторить' | 'Сложная тема';
+  grade?: number; // Оценка за урок
 }
 
 export interface Homework {
   id: string;
+  subject: Subject;
   description: string;
-  status: 'Выполнено' | 'Сделано частично' | 'Просрочено';
+  status: 'Выполнено' | 'Сделано частично' | 'Просрочено' | 'На проверке';
   dueDate: string;
+  grade?: number;
 }
 
 export interface Payment {
@@ -37,105 +46,138 @@ export interface Payment {
   date: string;
   amount: number;
   lessonsIncluded: number;
+  subject?: Subject; // Если оплата за конкретный предмет
 }
 
-// Моковые данные
-export const students: Student[] = [
-  {
-    id: 'ST-001',
-    name: 'Алексей К.',
-    level: 'Intermediate, B1',
-    learningGoal: 'Сдать ЕГЭ на 90+',
-    skills: [
-      { name: 'Грамматика', score: 7, lastUpdated: '2024-02-01' },
-      { name: 'Говорение', score: 5, lastUpdated: '2024-02-01' },
-      { name: 'Письмо', score: 6, lastUpdated: '2024-02-01' },
-      { name: 'Слух', score: 4, lastUpdated: '2024-02-01' },
-    ],
-    lessons: [
-      { id: 'L-001', date: '2024-02-05', topic: 'Past Simple vs Past Continuous', status: 'Понял на 100%' },
-      { id: 'L-002', date: '2024-02-12', topic: 'Conditionals Type 2', status: 'Нужно повторить' },
-      { id: 'L-003', date: '2024-02-19', topic: 'Modal Verbs', status: 'Понял на 100%' },
-    ],
-    homework: [
-      { id: 'HW-001', description: 'Упражнения на Past Simple', status: 'Выполнено', dueDate: '2024-02-08' },
-      { id: 'HW-002', description: 'Сочинение на тему " Путешествия "', status: 'Сделано частично', dueDate: '2024-02-15' },
-      { id: 'HW-003', description: 'Аудирование BBC', status: 'Просрочено', dueDate: '2024-02-10' },
-    ],
-    payments: [
-      { id: 'P-001', date: '2024-01-15', amount: 15000, lessonsIncluded: 10 },
-      { id: 'P-002', date: '2024-02-20', amount: 15000, lessonsIncluded: 10 },
-    ],
-    notes: 'Хорошо усваивает материал, но часто отвлекается на телефон',
-  },
-  {
-    id: 'ST-002',
-    name: 'Мария С.',
-    level: 'Upper-Intermediate, B2',
-    learningGoal: 'Переезд в Германию',
-    skills: [
-      { name: 'Грамматика', score: 8, lastUpdated: '2024-02-01' },
-      { name: 'Говорение', score: 7, lastUpdated: '2024-02-01' },
-      { name: 'Письмо', score: 9, lastUpdated: '2024-02-01' },
-      { name: 'Слух', score: 6, lastUpdated: '2024-02-01' },
-    ],
-    lessons: [
-      { id: 'L-004', date: '2024-02-06', topic: 'German Loanwords', status: 'Понял на 100%' },
-      { id: 'L-005', date: '2024-02-13', topic: 'Business Email Writing', status: 'Сложная тема' },
-    ],
-    homework: [
-      { id: 'HW-004', description: 'Подготовка к интервью', status: 'Выполнено', dueDate: '2024-02-12' },
-    ],
-    payments: [
-      { id: 'P-003', date: '2024-01-20', amount: 20000, lessonsIncluded: 8 },
-    ],
-    notes: 'Очень мотивирована, заметный прогресс',
-  },
-  {
-    id: 'ST-003',
-    name: 'Дмитрий В.',
-    level: 'Beginner, A2',
-    learningGoal: 'Базовая коммуникация для работы',
-    skills: [
-      { name: 'Грамматика', score: 4, lastUpdated: '2024-02-01' },
-      { name: 'Говорение', score: 3, lastUpdated: '2024-02-01' },
-      { name: 'Письмо', score: 5, lastUpdated: '2024-02-01' },
-      { name: 'Слух', score: 3, lastUpdated: '2024-02-01' },
-    ],
-    lessons: [
-      { id: 'L-006', date: '2024-02-07', topic: 'Present Simple', status: 'Нужно повторить' },
-    ],
-    homework: [
-      { id: 'HW-005', description: 'Повторить слова unit 3', status: 'Просрочено', dueDate: '2024-02-09' },
-      { id: 'HW-006', description: 'Диалоги в аэропорту', status: 'Просрочено', dueDate: '2024-02-11' },
-    ],
-    payments: [
-      { id: 'P-004', date: '2024-02-01', amount: 12000, lessonsIncluded: 5 },
-    ],
-    notes: 'Сложно выделять время на занятия, часто переносит',
-  },
-];
-
-// Функции для работы с данными
-export function getProblemStudents(): Student[] {
-  return students.filter(student => {
-    const hasOverdueHomework = student.homework.some(hw => hw.status === 'Просрочено');
-    const remainingLessons = getRemainingLessons(student);
-    const hasLowBalance = remainingLessons <= 2;
-    return hasOverdueHomework || hasLowBalance;
-  });
+// Генератор ID
+export function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
+// Начальные данные
+const initialStudents: Student[] = []
+
+// Функции для работы с localStorage
+const STORAGE_KEY = 'tutor_platform_students'
+
+export function loadStudents(): Student[] {
+  if (typeof window === 'undefined') return initialStudents
+  const stored = localStorage.getItem(STORAGE_KEY)
+  if (stored) {
+    try {
+      return JSON.parse(stored)
+    } catch {
+      return initialStudents
+    }
+  }
+  return initialStudents
+}
+
+export function saveStudents(students: Student[]): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(students))
+}
+
+// Операции CRUD
+export function addStudent(student: Omit<Student, 'id' | 'createdAt'>): Student {
+  const newStudent: Student = {
+    ...student,
+    id: generateId(),
+    createdAt: new Date().toISOString()
+  }
+  return newStudent
+}
+
+export function updateStudent(students: Student[], studentId: string, updates: Partial<Student>): Student[] {
+  return students.map(s => s.id === studentId ? { ...s, ...updates } : s)
+}
+
+export function deleteStudent(students: Student[], studentId: string): Student[] {
+  return students.filter(s => s.id !== studentId)
+}
+
+export function addLesson(students: Student[], studentId: string, lesson: Omit<Lesson, 'id'>): Student[] {
+  return students.map(s => {
+    if (s.id !== studentId) return s
+    return {
+      ...s,
+      lessons: [...s.lessons, { ...lesson, id: generateId() }]
+    }
+  })
+}
+
+export function addHomework(students: Student[], studentId: string, homework: Omit<Homework, 'id'>): Student[] {
+  return students.map(s => {
+    if (s.id !== studentId) return s
+    return {
+      ...s,
+      homework: [...s.homework, { ...homework, id: generateId() }]
+    }
+  })
+}
+
+export function updateHomeworkStatus(students: Student[], studentId: string, homeworkId: string, status: Homework['status']): Student[] {
+  return students.map(s => {
+    if (s.id !== studentId) return s
+    return {
+      ...s,
+      homework: s.homework.map(hw => hw.id === homeworkId ? { ...hw, status } : hw)
+    }
+  })
+}
+
+export function addPayment(students: Student[], studentId: string, payment: Omit<Payment, 'id'>): Student[] {
+  return students.map(s => {
+    if (s.id !== studentId) return s
+    return {
+      ...s,
+      payments: [...s.payments, { ...payment, id: generateId() }]
+    }
+  })
+}
+
+export function updateSubjectScore(students: Student[], studentId: string, subject: Subject, score: number): Student[] {
+  return students.map(s => {
+    if (s.id !== studentId) return s
+    const subjects = s.subjects.map(sub => 
+      sub.subject === subject 
+        ? { ...sub, score, lastUpdated: new Date().toISOString(), lastTest: new Date().toISOString() }
+        : sub
+    )
+    // Если предмета нет, добавляем
+    if (!subjects.find(sub => sub.subject === subject)) {
+      subjects.push({ subject, score, lastTest: new Date().toISOString(), lastUpdated: new Date().toISOString() })
+    }
+    return { ...s, subjects }
+  })
+}
+
+// Вспомогательные функции
 export function getRemainingLessons(student: Student): number {
-  const totalPaid = student.payments.reduce((sum, p) => sum + p.lessonsIncluded, 0);
-  const totalUsed = student.lessons.length;
-  return Math.max(0, totalPaid - totalUsed);
+  const totalPaid = student.payments.reduce((sum, p) => sum + p.lessonsIncluded, 0)
+  const totalUsed = student.lessons.length
+  return Math.max(0, totalPaid - totalUsed)
 }
 
 export function getAttendanceRate(student: Student): number {
-  // Упрощенная логика - в реальном приложении нужно больше данных
-  const totalLessons = student.lessons.length;
-  if (totalLessons === 0) return 100;
-  const completedLessons = student.lessons.filter(l => l.status === 'Понял на 100%').length;
-  return Math.round((completedLessons / totalLessons) * 100);
+  const totalLessons = student.lessons.length
+  if (totalLessons === 0) return 100
+  const completedLessons = student.lessons.filter(l => l.status === 'Понял').length
+  return Math.round((completedLessons / totalLessons) * 100)
+}
+
+export function getProblemStudents(students: Student[]): Student[] {
+  return students.filter(student => {
+    const hasOverdueHomework = student.homework.some(hw => hw.status === 'Просрочено')
+    const remainingLessons = getRemainingLessons(student)
+    const hasLowBalance = remainingLessons <= 2
+    const hasBadGrades = student.subjects.some(sub => sub.score <= 3)
+    return hasOverdueHomework || hasLowBalance || hasBadGrades
+  })
+}
+
+export function getAverageGrade(student: Student): number {
+  const grades = student.subjects.map(s => s.score)
+  if (grades.length === 0) return 0
+  return grades.reduce((a, b) => a + b, 0) / grades.length
 }

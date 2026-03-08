@@ -6,16 +6,16 @@ import {
   Moon, 
   Sun, 
   GraduationCap,
-  FileText,
-  DollarSign,
-  BarChart3
+  Plus
 } from 'lucide-react'
-import { students, Student } from '@/lib/data'
+import { Student } from '@/lib/data'
 
 interface SidebarProps {
   currentView: 'dashboard' | 'student'
   onNavigate: (view: 'dashboard' | 'student') => void
   onStudentClick: (student: Student) => void
+  students: Student[]
+  onAddStudent: () => void
   darkMode: boolean
   onToggleDarkMode: () => void
 }
@@ -24,6 +24,8 @@ export default function Sidebar({
   currentView, 
   onNavigate, 
   onStudentClick,
+  students,
+  onAddStudent,
   darkMode, 
   onToggleDarkMode 
 }: SidebarProps) {
@@ -32,11 +34,11 @@ export default function Sidebar({
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-2">
           <GraduationCap className="w-8 h-8 text-primary" />
-          <h1 className="text-xl font-bold">Tutor Hub</h1>
+          <h1 className="text-xl font-bold">ОГЭ Репетитор</h1>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-auto">
         <button
           onClick={() => onNavigate('dashboard')}
           className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
@@ -49,24 +51,35 @@ export default function Sidebar({
           <span>Дашборд</span>
         </button>
 
-        <div className="pt-4 pb-2">
-          <p className="text-xs text-muted-foreground uppercase px-4 mb-2">Ученики</p>
+        <div className="pt-4 pb-2 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground uppercase px-4">Ученики</p>
+          <button 
+            onClick={onAddStudent}
+            className="p-1 hover:bg-muted rounded"
+            title="Добавить ученика"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
         </div>
 
-        {students.map((student) => (
-          <button
-            key={student.id}
-            onClick={() => onStudentClick(student)}
-            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-left ${
-              currentView === 'student'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
-            }`}
-          >
-            <Users className="w-5 h-5" />
-            <span>{student.name}</span>
-          </button>
-        ))}
+        {students.length === 0 ? (
+          <p className="text-sm text-muted-foreground px-4 py-2">Нет учеников</p>
+        ) : (
+          students.map((student) => (
+            <button
+              key={student.id}
+              onClick={() => onStudentClick(student)}
+              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-left ${
+                currentView === 'student'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-muted'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span className="truncate">{student.name}</span>
+            </button>
+          ))
+        )}
       </nav>
 
       <div className="p-4 border-t border-border">
